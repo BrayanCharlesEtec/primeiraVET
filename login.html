@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VetCare</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">VetCare</a>
+            <button class="nav-toggle" id="navToggle">Menu</button>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link">Início</a></li>
+                    <li><a href="sobre.html" class="nav-link">Sobre</a></li>
+                    <li><a href="login.html" class="nav-link active">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-card">
+                    <h2 class="login-title">Login do Sistema</h2>
+                    
+                    <div id="errorMessage" class="error-message hidden">
+                        Usuário ou senha incorretos!
+                    </div>
+                    
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label for="usuario" class="form-label">Usuario</label>
+                            <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" id="senha" class="form-control" placeholder="Digite sua senha" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+                    </form>
+                    
+                    <div class="demo-accounts">
+                        <h4>Contas de Demonstração:</h4>
+                        <div class="account-list">
+                            <div class="account-item" onclick="preencherLogin('admin', '123456')">
+                                <strong>Admin</strong> - usuário: admin | senha: 123456
+                            </div>
+                            <div class="account-item" onclick="preencherLogin('vetjoao', '123456')">
+                                <strong>Veterinário</strong> - usuário: vetjoao | senha: 123456
+                            </div>
+                            <div class="account-item" onclick="preencherLogin('assistente', '123456')">
+                                <strong>Assistente</strong> - usuário: assistente | senha: 123456
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="login-links">
+                        <a href="#" class="text-link" onclick="alert('Funcionalidade em desenvolvimento')">Esqueci minha senha</a>
+                        <a href="#" class="text-link" onclick="alert('Entre em contato com o administrador')">Solicitar acesso</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VetCare - Sistema Veterinário. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            const usuariosValidos = {
+                'admin': '123456',
+                'vetjoao': '123456',
+                'vetmaria': '123456',
+                'assistente': '123456'
+            };
+            
+            if (usuariosValidos[usuario] && usuariosValidos[usuario] === senha) {
+                localStorage.setItem('usuarioLogado', usuario);
+                localStorage.setItem('nomeUsuario', getNomeUsuario(usuario));
+                localStorage.setItem('tipoUsuario', getTipoUsuario(usuario));
+                
+                window.location.href = 'sucesso.html';
+            } else {
+                errorMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    errorMessage.classList.add('hidden');
+                }, 3000);
+            }
+        });
+        
+        function getNomeUsuario(usuario) {
+            const nomes = {
+                'admin': 'Administrador',
+                'vetjoao': 'Dr. João Silva',
+                'vetmaria': 'Dra. Maria Santos',
+                'assistente': 'Carlos Oliveira'
+            };
+            return nomes[usuario] || 'Usuário';
+        }
+        
+        function getTipoUsuario(usuario) {
+            const tipos = {
+                'admin': 'Administrador',
+                'vetjoao': 'Veterinário',
+                'vetmaria': 'Veterinário',
+                'assistente': 'Assistente'
+            };
+            return tipos[usuario] || 'Usuário';
+        }
+        
+        function preencherLogin(usuario, senha) {
+            document.getElementById('usuario').value = usuario;
+            document.getElementById('senha').value = senha;
+        }
+
+    </script>
+</body>
+</html>

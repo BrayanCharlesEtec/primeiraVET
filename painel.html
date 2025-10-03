@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel - VetCare</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">VetCare</a>
+            <button class="nav-toggle" id="navToggle">Menu</button>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link">Início</a></li>
+                    <li><a href="sobre.html" class="nav-link">Sobre</a></li>
+                    <li><a href="painel.html" class="nav-link active">Painel</a></li>
+                    <li><a href="#" class="nav-link" id="logoutBtn">Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section section-light">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Bem-vindo, <span id="userName">Usuário</span>!</h1>
+                <p>Você está logado como <span id="userType">Usuário</span>. Esta é a tela do painel do usuário.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="consultasHoje">12</span>
+                    <span class="stat-label">Consultas Hoje</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="pacientesInternados">8</span>
+                    <span class="stat-label">Pacientes Internados</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="vacinacoesPendentes">23</span>
+                    <span class="stat-label">Vacinações Pendentes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalPacientes">156</span>
+                    <span class="stat-label">Total de Pacientes</span>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Consultas de Hoje</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="schedule-list" id="listaConsultas">
+                        </ul>
+                        <button class="btn-action" onclick="agendarConsulta()">Agendar Nova Consulta</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ações Rápidas</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="action-buttons">
+                            <button class="btn-action" onclick="novaConsulta()">Nova Consulta</button>
+                            <button class="btn-action" onclick="cadastrarPaciente()">Cadastrar Paciente</button>
+                            <button class="btn-action" onclick="registrarMedicamento()">Registrar Medicamento</button>
+                            <button class="btn-action" onclick="gerarRelatorio()">Gerar Relatório</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Lembretes</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="reminder-list" id="listaLembretes">
+                        </ul>
+                        <button class="btn-action" onclick="adicionarLembrete()">Adicionar Lembrete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <h3 id="modalActionTitle">Ação</h3>
+            <div id="modalActionContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VetCare - Sistema Veterinário. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        if (!localStorage.getItem('usuarioLogado')) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userName').textContent = localStorage.getItem('nomeUsuario') || 'Usuário';
+        document.getElementById('userType').textContent = localStorage.getItem('tipoUsuario') || 'Usuário';
+
+        const consultasHoje = [
+            { hora: '09:00', paciente: 'Rex', cliente: 'Ana Silva', status: 'agendada' },
+            { hora: '10:30', paciente: 'Luna', cliente: 'Carlos Santos', status: 'confirmada' },
+            { hora: '14:00', paciente: 'Thor', cliente: 'Maria Oliveira', status: 'agendada' },
+            { hora: '16:30', paciente: 'Mel', cliente: 'Roberto Costa', status: 'confirmada' }
+        ];
+
+        const lembretes = [
+            'Vacina V10 - Rex (amanhã)',
+            'Retorno - Luna (2 dias)',
+            'Exame sangue - Thor (1 semana)',
+            'Castração - Mel (15 dias)'
+        ];
+
+        const listaConsultas = document.getElementById('listaConsultas');
+        consultasHoje.forEach(consulta => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${consulta.hora}</strong> - ${consulta.paciente} (${consulta.cliente})
+                <span class="status-badge status-${consulta.status}">
+                    ${consulta.status.charAt(0).toUpperCase() + consulta.status.slice(1)}
+                </span>
+            `;
+            listaConsultas.appendChild(li);
+        });
+
+        const listaLembretes = document.getElementById('listaLembretes');
+        lembretes.forEach(lembrete => {
+            const li = document.createElement('li');
+            li.textContent = lembrete;
+            listaLembretes.appendChild(li);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Deseja realmente sair do sistema?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        });
+
+        function novaConsulta() {
+            mostrarModal('Nova Consulta', `
+                <div class="form-group">
+                    <label>Paciente:</label>
+                    <select class="form-control">
+                        <option>Rex - Ana Silva</option>
+                        <option>Luna - Carlos Santos</option>
+                        <option>Thor - Maria Oliveira</option>
+                        <option>Mel - Roberto Costa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Data e Hora:</label>
+                    <input type="datetime-local" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Tipo:</label>
+                    <select class="form-control">
+                        <option>Consulta de Rotina</option>
+                        <option>Emergência</option>
+                        <option>Vacinação</option>
+                        <option>Retorno</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Consulta agendada com sucesso!'); fecharModal()">Agendar</button>
+            `);
+        }
+
+        function cadastrarPaciente() {
+            mostrarModal('Cadastrar Paciente', `
+                <div class="form-group">
+                    <label>Nome do Animal:</label>
+                    <input type="text" class="form-control" placeholder="Ex: Rex">
+                </div>
+                <div class="form-group">
+                    <label>Espécie:</label>
+                    <select class="form-control">
+                        <option>Cão</option>
+                        <option>Gato</option>
+                        <option>Ave</option>
+                        <option>Roedor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Dono:</label>
+                    <input type="text" class="form-control" placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label>Telefone:</label>
+                    <input type="tel" class="form-control" placeholder="(11) 99999-9999">
+                </div>
+                <button class="btn btn-primary" onclick="alert('Paciente cadastrado com sucesso!'); fecharModal()">Cadastrar</button>
+            `);
+        }
+
+        function registrarMedicamento() {
+            mostrarModal('Registrar Medicamento', `
+                <div class="form-group">
+                    <label>Medicamento:</label>
+                    <input type="text" class="form-control" placeholder="Ex: Antipulgas Simparic">
+                </div>
+                <div class="form-group">
+                    <label>Quantidade:</label>
+                    <input type="number" class="form-control" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Validade:</label>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Lote:</label>
+                    <input type="text" class="form-control" placeholder="Número do lote">
+                </div>
+                <button class="btn btn-primary" onclick="alert('Medicamento registrado com sucesso!'); fecharModal()">Registrar</button>
+            `);
+        }
+
+        function gerarRelatorio() {
+            mostrarModal('Gerar Relatório', `
+                <div class="form-group">
+                    <label>Tipo de Relatório:</label>
+                    <select class="form-control">
+                        <option>Consultas do Mês</option>
+                        <option>Pacientes Ativos</option>
+                        <option>Controle de Estoque</option>
+                        <option>Financeiro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Período:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" class="form-control" placeholder="Data inicial">
+                        <input type="date" class="form-control" placeholder="Data final">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Relatório gerado com sucesso!'); fecharModal()">Gerar Relatório</button>
+            `);
+        }
+
+        function agendarConsulta() {
+            novaConsulta();
+        }
+
+        function adicionarLembrete() {
+            const lembrete = prompt('Digite o lembrete:');
+            if (lembrete) {
+                const li = document.createElement('li');
+                li.textContent = lembrete;
+                document.getElementById('listaLembretes').appendChild(li);
+                alert('Lembrete adicionado!');
+            }
+        }
+
+        function mostrarModal(titulo, conteudo) {
+            document.getElementById('modalActionTitle').textContent = titulo;
+            document.getElementById('modalActionContent').innerHTML = conteudo;
+            document.getElementById('actionModal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('actionModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('actionModal');
+            if (event.target == modal) {
+                fecharModal();
+            }
+        }
+    </script>
+</body>
+</html>

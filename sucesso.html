@@ -1,0 +1,46 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Bem-Sucedido - VetCare</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">VetCare</a>
+        </div>
+    </header>
+
+    <section class="success">
+        <div class="container">
+            <div class="success-box">
+                <h1>Login Bem-Sucedido!</h1>
+                <p>Você foi autenticado com sucesso no sistema VetCare.</p>
+                <p>Redirecionando para o painel em <span id="countdown">5</span> segundos...</p>
+                <a href="painel.html" class="btn btn-primary">Continuar para o Painel</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VetCare - Sistema Veterinário</p>
+        </div>
+    </footer>
+
+    <script>
+        let seconds = 5;
+        const countdownElement = document.getElementById('countdown');
+        const countdown = setInterval(() => {
+            seconds--;
+            countdownElement.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(countdown);
+                window.location.href = 'painel.html';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
